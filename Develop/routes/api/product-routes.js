@@ -10,7 +10,7 @@ const { Product, Category, Tag, ProductTag } = require("../../models");
 router.get("/", async (req, res) => {
   try {
     const productData = await Product.findAll({
-      include: [{ model: Category }, { model: Tag }],
+      include: [{ model: Category }, { model: Tag, as: "products_tagged" }],
     });
     res.status(200).json(productData);
   } catch (err) {
@@ -83,7 +83,11 @@ router.put("/:id", async (req, res) => {
     where: {
       id: req.params.id,
     },
-  })
+  });
+  res
+    .status(200)
+    .json({ message: "Tag Updated" })
+
     .then((product) => {
       // find all associated tags from ProductTag
       return ProductTag.findAll({ where: { product_id: req.params.id } });

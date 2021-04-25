@@ -8,7 +8,7 @@ const { Tag, Product, ProductTag } = require("../../models");
 router.get("/", async (req, res) => {
   try {
     const tagData = await Tag.findAll({
-      include: [{ model: Product }],
+      include: [{ model: Product, as: "tagged_products" }],
     });
     res.status(200).json(tagData);
   } catch (err) {
@@ -47,11 +47,16 @@ router.post("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   // update a tag's name by its `id` value
-  Tag.update(req.body, {
-    where: {
-      id: req.params.id,
-    },
-  });
+  try {
+    const tagData = Tag.update(req.body, {
+      where: {
+        id: req.params.id,
+      },
+    });
+    res.status(200).json({ message: "Tag Updated" });
+  } catch (err) {
+    res.status(400).json(err);
+  }
 });
 
 // delete on tag by its `id` value
